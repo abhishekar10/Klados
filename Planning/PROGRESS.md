@@ -13,9 +13,9 @@ Everything described below exists in the working tree as of this writing but is 
 | MVP | Done |
 | Phase 1.5 (Scheduling & Habits) | Done |
 | Phase 2 (reorder, search) | Done, with one deliberate simplification (see §3) |
-| Phase 3 (polish/animation, icon/splash, EAS build) | Animation pass done; icon/splash artwork and an actual EAS build execution are **not** done (see §5) |
+| Phase 3 (polish/animation, icon/splash, EAS build) | Animation pass done; icon/splash artwork now done (see below); an actual EAS build execution is still **not** done (see §5) |
 
-Verified each round via `npx tsc --noEmit`, the Jest suite, and `npx expo export -p android` (the strongest check available — this dev environment has no Android emulator, Java, or `adb`, so nothing has been tapped through on an actual device or Expo Go session by an agent). All green as of the last commit-worthy state.
+Verified each round via `npx tsc --noEmit`, the Jest suite, and `npx expo export -p android`. As of this session, the app has also been run for real on the user's own physical Android phone via Expo Go over a tunnel connection (`npx expo start --tunnel`, `@expo/ngrok` added as a dev dependency to support this) — the first actual on-device verification in this project's history, not just typecheck/bundle checks. That on-device pass is exactly what caught the `inlineRem` bug (§3) that no amount of static review had surfaced.
 
 ---
 
@@ -76,10 +76,11 @@ This one cost real back-and-forth, so it's worth its own section. Expo Go builds
 
 ## 5. What's genuinely not done
 
-1. **On-device verification.** Nothing here has been tapped through on a real device or Expo Go session by an agent — this sandbox has no emulator, Java, or `adb`. Everything claimed "working" is backed by typecheck + Jest + a successful production bundle + careful code reading, not a live run. [`TESTING.md`](./TESTING.md) §2 has the full manual checklist; none of it can be marked passed yet.
-2. **Real app icon/splash artwork.** Still Expo's default template assets. No image-generation tooling was available to produce real Klados branding, and a low-quality fake felt worse than flagging it honestly. This is a design task, not an engineering one.
-3. **An actual EAS build.** `eas.json` exists with Android-`.apk` profiles (`development`/`preview`/`production`), but running it needs an Expo account login (`eas login`, `eas init`) and, for a local build, Java 17 + the Android SDK on whatever machine runs it — see [`ENVIRONMENT-SETUP.md`](./ENVIRONMENT-SETUP.md) and [`BUILD-AND-EXPORT.md`](./BUILD-AND-EXPORT.md).
-4. **Export/import (JSON backup).** Listed in brief §10 as a stretch feature but flagged there as worth prioritizing given there's no cloud copy of data. Not built.
+1. **Full on-device manual regression.** The app has now been run for real via Expo Go on the user's phone (see §1) — real progress over prior sessions — but that was ad-hoc use during this session's feature work, not the systematic checklist in [`TESTING.md`](./TESTING.md) §2, and specifically not yet against a standalone compiled `.apk` (Expo Go and a real binary can differ — config plugins, e.g. `expo-sqlite`'s, only actually run during a native build; see §3 above and the swipe-gesture entry above it for two examples of things that only surfaced under real on-device testing this session).
+2. **An actual EAS build.** `eas.json` exists with Android-`.apk` profiles (`development`/`preview`/`production`), but running it needs an Expo account login (`eas login`, `eas init`) and, for a local build, Java 17 + the Android SDK on whatever machine runs it — see [`ENVIRONMENT-SETUP.md`](./ENVIRONMENT-SETUP.md) and [`BUILD-AND-EXPORT.md`](./BUILD-AND-EXPORT.md). Neither is set up in this sandbox as of this session.
+3. **Export/import (JSON backup).** Listed in brief §10 as a stretch feature but flagged there as worth prioritizing given there's no cloud copy of data. Not built.
+
+**Real app icon/splash artwork — now done**, moved out of this list. `assets/icon.png`, `android-icon-{foreground,background,monochrome}.png`, and `splash-icon.png` were replaced (same filenames/dimensions as the Expo template originals, so `app.json` needed no structural changes beyond updating `adaptiveIcon.backgroundColor` from the placeholder `#E6F4FE` to the new mark's actual brand blue `#2563eb`). The mark: a minimal root-and-two-branches node glyph — chosen because "Klados" is Greek for *branch* (κλάδος), and the glyph is literally the app's own goal-tree structure (a root branching into children) reduced to its simplest form, not an abstract/unrelated mark. Built as hand-written SVG rendered via `cairosvg` (installed into a throwaway venv, not a project dependency — ImageMagick's built-in SVG coder was tried first and silently dropped path elements; its `rsvg-convert` delegate wasn't installed and `apt`/global npm both lacked permissions in this sandbox, so a local Python venv was the path of least resistance). The foreground/monochrome adaptive-icon layers were deliberately sized and centered within Android's ~66%-of-canvas safe zone and verified against both a circle mask and a squircle mask before installing — nothing clips under either.
 
 ---
 
