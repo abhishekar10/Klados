@@ -1,5 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, Keyboard, KeyboardAvoidingView, Pressable, RefreshControl, Text, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  PanResponder,
+  Pressable,
+  RefreshControl,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -77,6 +88,31 @@ export function ExplorerScreen({ currentId }: { currentId: string | null }) {
   useEffect(() => {
     reload();
   }, [reload]);
+
+  // Edge-swipe-right to go back, mirroring the hardware/breadcrumb back affordance. Attached
+  // below (via backSwipe.panHandlers, further down) only to the FlatList's KeyboardAvoidingView
+  // wrapper — not the whole screen — so it's structurally outside the header and "Add a goal"
+  // TextInput's view hierarchy entirely, rather than relying only on the leftmost-40px gate to
+  // avoid conflicting with that input's own text-selection drags. Within its actual area (the
+  // list body), onMoveShouldSetPanResponder only claims the touch once movement is clearly
+  // horizontal — a plain tap (near-zero movement) never triggers it, so row Pressables and
+  // checkboxes underneath are unaffected; the gate plus this narrower attachment point together
+  // keep the risk of hijacking another gesture low without needing react-native-gesture-handler.
+  const backSwipeRef = useRef<ReturnType<typeof PanResponder.create> | null>(null);
+  if (!backSwipeRef.current) {
+    backSwipeRef.current = PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        const startX = evt.nativeEvent.pageX - gestureState.dx;
+        return startX < 40 && gestureState.dx > 15 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
+      },
+      onPanResponderRelease: (_evt, gestureState) => {
+        if (gestureState.dx > 70 && Math.abs(gestureState.dy) < 100 && router.canGoBack()) {
+          router.back();
+        }
+      },
+    });
+  }
+  const backSwipe = backSwipeRef.current;
 
   const handleAdd = async () => {
     const title = newTitle.trim();
@@ -237,7 +273,7 @@ export function ExplorerScreen({ currentId }: { currentId: string | null }) {
         </Pressable>
       </View>
 
-      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }} {...backSwipe.panHandlers}>
       <FlatList
         data={tree}
         keyExtractor={(entry) => entry.goal.id}
