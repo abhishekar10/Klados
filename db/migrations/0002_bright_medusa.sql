@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `recurring_window_days` integer DEFAULT 30 NOT NULL;

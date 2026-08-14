@@ -1,0 +1,1 @@
+ALTER TABLE `settings` ADD `font_scale` real DEFAULT 1 NOT NULL;

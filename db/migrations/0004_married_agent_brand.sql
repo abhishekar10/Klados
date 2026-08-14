@@ -1,0 +1,1 @@
+ALTER TABLE `goals` ADD `recurring_mode` text DEFAULT 'rotation' NOT NULL;

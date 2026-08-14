@@ -20,7 +20,11 @@ Per [`TECH-STACK.md`](./TECH-STACK.md) §3, the pure logic in `lib/` (no React, 
 
 ### Where tests live
 
-Co-located: `lib/rollup.ts` → `lib/__tests__/rollup.test.ts` (or `lib/rollup.test.ts`, either convention is fine — pick one and stay consistent).
+Co-located, one `__tests__/` dir per pure-logic module: `lib/rollup.ts` → `lib/__tests__/rollup.test.ts`, and likewise `lib/cycles.ts`, `lib/staleness.ts`, `lib/surfacing.ts`, `lib/accentColor.ts`, and `components/indicators/geometry.ts`. Not tested this way: anything that touches the DB directly (`lib/goals.ts`, `lib/completionLog.ts`, `lib/settings.ts`) — see the note below.
+
+### What's deliberately *not* unit-tested
+
+`lib/goals.ts`, `lib/completionLog.ts`, and `lib/settings.ts` call `expo-sqlite` directly and aren't covered by the automated suite — mocking a real SQLite connection is more test infrastructure than this project has needed so far. Their correctness is verified via the manual checklist below plus the `independent-reviewer` subagent reading the code against the brief at each milestone. Revisit this if a bug ever slips through that a DB-level test would have caught.
 
 ### Running
 

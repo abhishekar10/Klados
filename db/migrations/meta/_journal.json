@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1786679701306,
+      "tag": "0000_wild_black_crow",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1786686078485,
+      "tag": "0001_rainy_lord_hawal",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786687228651,
+      "tag": "0002_bright_medusa",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1786691295329,
+      "tag": "0003_dark_vulture",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1786691837516,
+      "tag": "0004_married_agent_brand",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1786696660186,
+      "tag": "0005_unknown_molecule_man",
+      "breakpoints": true
+    }
+  ]
+}

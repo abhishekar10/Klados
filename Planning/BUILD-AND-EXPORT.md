@@ -21,33 +21,13 @@ This is the loop for nearly all development — fast refresh, no native build st
 
 ### 2.1 One-time setup
 
+`eas.json` already exists in the repo, with `development`/`preview`/`production` profiles all producing a raw `.apk` (not the Play-Store-oriented `.aab` EAS defaults to — there's no Play Store distribution here, per brief §11: "Android can install an `.apk` directly with no account needed"). What's not (and can't be) committed is a link to *your* Expo account:
+
 ```bash
 npm install -g eas-cli
 eas login          # requires a free Expo account — only used for the build service/config, not runtime
-eas build:configure
+eas init            # links this project to your account, writes a project ID into app.json
 ```
-
-This generates `eas.json` with build profiles. Edit it to look roughly like:
-
-```json
-{
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal",
-      "android": { "buildType": "apk" }
-    },
-    "production": {
-      "android": { "buildType": "apk" }
-    }
-  }
-}
-```
-
-The key line is `"buildType": "apk"` — by default EAS builds an `.aab` (Android App Bundle), which is what the Play Store wants but **cannot be sideloaded directly**. Since there's no Play Store distribution here (brief §11: "Android can install an `.apk` directly with no account needed"), every profile should produce a raw `.apk`.
 
 ### 2.2 Building
 
