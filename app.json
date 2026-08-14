@@ -26,6 +26,13 @@
           "useSQLCipher": false
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f4781c23-b44d-474c-be09-fa362a93c38e"
+      }
+    },
+    "owner": "abhisheky-dev"
   }
 }
